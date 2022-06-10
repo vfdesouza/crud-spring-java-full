@@ -1,54 +1,63 @@
 package com.example.vinicius.controllers;
 
 import com.example.vinicius.models.Client;
-import com.example.vinicius.repository.TClientRepository;
+import com.example.vinicius.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ClientController{
 
     @Autowired
-    private TClientRepository cr;
+    private ClientRepository cr;
 
-    @RequestMapping(value ="/cadClient", method = RequestMethod.GET)
+
+    @RequestMapping(value ="/formInsert", method = RequestMethod.GET)
     public String form() {
-        return "formCadClient";
+        return "formInsert";
     }
 
-    @RequestMapping(value ="/cadClient", method = RequestMethod.POST)
-    public String form(Client client) {
+    @RequestMapping(value ="/formInsert", method = RequestMethod.POST)
+    public String insert(Client client) {
         cr.save(client);
-        return "redirect:/cadClient";
+        return "redirect:/home";
     }
 
-    @RequestMapping("/clients")
-    public ModelAndView listClients() {
-        ModelAndView mv = new ModelAndView("index");
-        Iterable<Client> clients = cr.findAll();
-        mv.addObject("clients", clients);
+    @GetMapping("formUpdate/{id}")
+    public ModelAndView updateForm(@PathVariable long id) {
+        ModelAndView mv = new ModelAndView("formUpdate");
+        Client client = cr.findById(id);
+        mv.addObject("client", client);
         return mv;
     }
 
-/*    public String deleteClient(long id){
-        Iterable<Client> clients = cr.findAll();
-        for(Client client : clients) {
-            if(client.getId() == id) {
-                cr.delete(client);
-            }
-        }
-        return "redirect:/clients";
-    }*/
-
-    @RequestMapping("/deleteClient")
-    public String deleteClient(long id){
-        Client client = cr.findById(id);
-        cr.delete(client);
-        return "redirect:/clients";
+    @PostMapping("update/{id}")
+    //@RequestMapping(value ="/formUpdate", method = RequestMethod.POST)
+    public String update(Client client, @PathVariable long id) {
+        cr.save(client);
+        return "redirect:/home";
     }
 
+
+    @RequestMapping("/home")
+    public ModelAndView findAll(@RequestParam(value = "nameSearch", required = false) String nameSearch) {
+        if (nameSearch == null) {
+            ModelAndView mv = new ModelAndView("home");
+            Iterable<Client> clients = cr.findAll();
+            mv.addObject("clients", clients);
+            return mv;
+        }
+        ModelAndView mv = new ModelAndView("home");
+        mv.addObject("clients", cr.findByNameIgnoreCaseContaining(nameSearch));
+        return mv;
+    }
+
+    @RequestMapping("/deleteClient")
+    public String delete(long id){
+        Client client = cr.findById(id);
+        cr.delete(client);
+        return "redirect:/home";
+    }
 }

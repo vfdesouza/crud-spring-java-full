@@ -1,4 +1,4 @@
-package com.example.vinicius.Db;
+package com.example.vinicius.data;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
