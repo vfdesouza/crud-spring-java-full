@@ -10,4 +10,4 @@
 ##### - DBever como gerenciador do banco de dados;
 ##### - Framework Spring MVC;
 ##### - Thymeleaf para o HTML;
-##### - Materialize como Frameworks CSS para estilização.
+##### - Materialize como Framework CSS para estilização.
